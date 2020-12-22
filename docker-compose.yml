@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  app:
+    image: openjdk:11-jre
+    ports:
+      - "8080:8080"
+    working_dir: "/app"
+    command: java -jar picshare-0.0.1-SNAPSHOT.jar
+    volumes:
+      - "./target/picshare-0.0.1-SNAPSHOT.jar:/app/picshare-0.0.1-SNAPSHOT.jar"
+    depends_on:
+      - db
+    environment:
+      - MYSQL_PASSWORD=root
+      - MYSQL_USER=admin
+      - MYSQL_DATABASE=picshare
+  db:
+    image: mysql:latest
+    environment:
+       - MYSQL_ROOT_PASSWORD=root
+       - MYSQL_USER=admin
+       - MYSQL_PASSWORD=root
+       - MYSQL_DATABASE=picshare
+    ports:
+       - "3306:3306"
+    volumes:
+       - "./volumes/config/my.conf:/etc/mysql/conf.d/config-file.cnf"
+       - "./volumes/data:/var/lib/mysql:rw"
+  pma:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+       - "8081:80"
+    depends_on:
+       - db
